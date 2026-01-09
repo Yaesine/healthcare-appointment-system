@@ -7,8 +7,9 @@ class ApiService {
   // For Android emulator, use 10.0.2.2 instead of localhost
   // For iOS simulator, use localhost
   // For physical device, use your computer's IP address
-  static const String baseUrl = 'http://10.0.2.2:8080/api'; // Android emulator
+  // static const String baseUrl = 'http://10.0.2.2:8080/api'; // Android emulator
   // static const String baseUrl = 'http://localhost:8080/api'; // iOS simulator
+  static const String baseUrl = 'http://10.188.38.220:8080/api'; // Physical iPhone
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<String?> _getToken() async {
@@ -24,7 +25,12 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> login(String username, String password) async {
+    print('🔵 [API] Starting login request...');
+    print('🔵 [API] URL: $baseUrl/auth/login');
+    print('🔵 [API] Username: $username');
+    
     try {
+      print('🔵 [API] Sending HTTP POST request...');
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
@@ -32,17 +38,25 @@ class ApiService {
           'username': username,
           'password': password,
         }),
-      );
+      ).timeout(const Duration(seconds: 30));
+
+      print('🔵 [API] Response received!');
+      print('🔵 [API] Status code: ${response.statusCode}');
+      print('🔵 [API] Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await _saveToken(data['token']);
+        print('✅ [API] Login successful, token saved');
         return {'success': true, 'data': data};
       } else {
         final error = jsonDecode(response.body);
+        print('❌ [API] Login failed: ${error['message']}');
         return {'success': false, 'message': error['message'] ?? 'Login failed'};
       }
     } catch (e) {
+      print('❌ [API] Exception caught: ${e.toString()}');
+      print('❌ [API] Error type: ${e.runtimeType}');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }

@@ -38,12 +38,16 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> login(String username, String password) async {
+    print('🟢 [AUTH] Login called');
     _isLoading = true;
     _error = null;
     notifyListeners();
+    print('🟢 [AUTH] Loading state set to true, notifying listeners');
 
     try {
+      print('🟢 [AUTH] Calling API service login...');
       final result = await _apiService.login(username, password);
+      print('🟢 [AUTH] API service returned: ${result['success']}');
       _isLoading = false;
 
       if (result['success']) {
@@ -53,16 +57,19 @@ class AuthProvider with ChangeNotifier {
           userId: data['userId'],
         );
         _error = null;
+        print('✅ [AUTH] Login successful, user set');
         notifyListeners();
         return true;
       } else {
         _error = result['message'];
+        print('❌ [AUTH] Login failed: $_error');
         notifyListeners();
         return false;
       }
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
+      print('❌ [AUTH] Exception in login: $e');
       notifyListeners();
       return false;
     }
