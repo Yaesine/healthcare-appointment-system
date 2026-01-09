@@ -55,7 +55,7 @@ healthcare-appointment-system/
 │   │       │   └── service/         # Business logic
 │   │       └── resources/
 │   │           ├── application.properties
-│   │           └── data.sql         # Sample data
+│   │           └── data.sql         # Sample data (disabled by default)
 │   └── pom.xml
 └── mobile_app/
     └── lib/
@@ -172,6 +172,8 @@ mvn spring-boot:run
 
 The API will be available at `http://localhost:8080`
 
+**Note:** The backend is configured to listen on all network interfaces (`0.0.0.0`) to allow connections from mobile devices on the same network.
+
 ### Frontend Setup
 
 1. Navigate to the mobile_app directory:
@@ -185,9 +187,12 @@ flutter pub get
 ```
 
 3. Update API base URL in `lib/services/api_service.dart`:
-   - For Android emulator: `http://10.0.2.2:8080/api` (default)
+   - For Android emulator: `http://10.0.2.2:8080/api`
    - For iOS simulator: `http://localhost:8080/api`
    - For physical device: `http://<your-computer-ip>:8080/api`
+     - Find your Mac's IP: `ifconfig | grep "inet " | grep -v 127.0.0.1`
+     - Ensure iPhone and Mac are on the same WiFi network
+     - May need to allow Java through Mac Firewall (System Settings → Network → Firewall)
 
 4. Run the application:
 ```bash
@@ -198,9 +203,9 @@ flutter run
 
 ### Sample Credentials
 
-**Note:** Test users are created on first backend startup. If they don't exist, you can:
+**Important:** Since we're using H2 in-memory database, no users are pre-seeded. You need to create users manually:
 
-1. **Register in the app** - Use the registration screen
+1. **Register in the app** (Recommended) - Use the registration screen in the Flutter app
 2. **Create via API:**
    ```bash
    curl -X POST http://localhost:8080/api/auth/register \
@@ -208,9 +213,7 @@ flutter run
      -d '{"username":"patient1","password":"password123","email":"patient1@example.com"}'
    ```
 
-**Default test users** (if created):
-- Username: `patient1`, Password: `password123`
-- Username: `patient2`, Password: `password123`
+**Note:** All data (including users) is lost when the backend restarts due to H2 in-memory database. For production, use a persistent database like PostgreSQL or MySQL.
 
 ### Manual Testing Flow
 
@@ -245,7 +248,10 @@ flutter run
 - Suitable for demonstration and development
 - Easy to replace with PostgreSQL/MySQL for production
 
-**Trade-off**: Data is lost on application restart. For production, replace with a persistent database.
+**Trade-off**: 
+- Data is lost on application restart (including all users and appointments)
+- Users must be created manually after each restart
+- For production, replace with a persistent database (PostgreSQL/MySQL recommended)
 
 ### State Management: Provider
 
