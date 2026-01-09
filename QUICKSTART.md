@@ -33,6 +33,20 @@ flutter run
 
 ## Test Credentials
 
+**Note:** You need to register first or create a test user:
+
+**Option 1: Register in the app**
+- Open app and tap "Register"
+- Create your account
+
+**Option 2: Create test user via API:**
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"patient1","password":"password123","email":"patient1@example.com"}'
+```
+
+Then login with:
 - Username: `patient1`
 - Password: `password123`
 

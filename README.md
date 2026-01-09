@@ -198,7 +198,17 @@ flutter run
 
 ### Sample Credentials
 
-The application comes with pre-seeded test users:
+**Note:** Test users are created on first backend startup. If they don't exist, you can:
+
+1. **Register in the app** - Use the registration screen
+2. **Create via API:**
+   ```bash
+   curl -X POST http://localhost:8080/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"username":"patient1","password":"password123","email":"patient1@example.com"}'
+   ```
+
+**Default test users** (if created):
 - Username: `patient1`, Password: `password123`
 - Username: `patient2`, Password: `password123`
 
